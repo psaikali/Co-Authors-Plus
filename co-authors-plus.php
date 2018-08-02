@@ -215,6 +215,9 @@ class CoAuthors_Plus {
 		// Add quick-edit co-author select field
 		add_action( 'quick_edit_custom_box', array( $this, '_action_quick_edit_custom_box' ), 10, 2 );
 
+		// Add co-author select field to Bulk Edit actions form
+		add_action( 'bulk_edit_custom_box', array( $this, '_action_bulk_edit_custom_box' ), 10, 2 );
+
 		// Hooks to modify the published post number count on the Users WP List Table
 		add_filter( 'manage_users_columns', array( $this, '_filter_manage_users_columns' ) );
 		add_filter( 'manage_users_custom_column', array( $this, '_filter_manage_users_custom_column' ), 10, 3 );
@@ -527,6 +530,24 @@ class CoAuthors_Plus {
 			<span class="title"><?php esc_html_e( 'Authors', 'co-authors-plus' ) ?></span>
 			<div id="coauthors-edit" class="hide-if-no-js">
 				<p><?php echo wp_kses( __( 'Click on an author to change them. Drag to change their order. Click on <strong>Remove</strong> to remove them.', 'co-authors-plus' ), array( 'strong' => array() ) ); ?></p>
+			</div>
+			<?php wp_nonce_field( 'coauthors-edit', 'coauthors-nonce' ); ?>
+		</label>
+		<?php
+	}
+
+	/**
+	 * Bulk Edit co-authors box.
+	 */
+	function _action_bulk_edit_custom_box( $column_name, $post_type ) {
+		if ( 'coauthors' != $column_name || ! $this->is_post_type_enabled( $post_type ) || ! $this->current_user_can_set_authors() ) {
+			return;
+		}
+		?>
+		<label class="bulk-edit-group bulk-edit-coauthors">
+			<span class="title"><?php esc_html_e( 'Authors', 'co-authors-plus' ) ?></span>
+			<div id="coauthors-edit" class="hide-if-no-js">
+				<p><?php echo wp_kses( __( 'Leave the field below blank to keep the authors unchanged. Click on an author to change them. Drag to change their order. Click on <strong>Remove</strong> to remove them.', 'co-authors-plus' ), array( 'strong' => array() ) ); ?></p>
 			</div>
 			<?php wp_nonce_field( 'coauthors-edit', 'coauthors-nonce' ); ?>
 		</label>

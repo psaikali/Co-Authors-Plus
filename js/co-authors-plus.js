@@ -407,6 +407,7 @@ jQuery( document ).ready(function () {
 	}
 	else if ( 'edit-php' == adminpage ) {
 
+		// 'Inline edit' logic
 		var wpInlineEdit = inlineEditPost.edit;
 
 		inlineEditPost.edit = function( id ) {
@@ -439,6 +440,32 @@ jQuery( document ).ready(function () {
 				})
 				coauthors_initialize( post_coauthors );
 
+			}
+		}
+
+		// 'Bulk edit' logic
+		var coauthors_initialized_on_bulk_edit = false;
+		var wpBulkEdit = inlineEditPost.setBulk;
+
+		inlineEditPost.setBulk = function() {
+
+			wpBulkEdit.apply( this, arguments );
+
+			// Initialize co-authors, but only on the first 'Bulk edit' interaction.
+			if ( ! coauthors_initialized_on_bulk_edit ) {
+				var $bulk_edit_coauthors_el = jQuery( '#bulk-edit .bulk-edit-coauthors' );
+				var $bulk_right_column = jQuery( '#bulk-edit .inline-edit-col-right' );
+
+				// Move the Authors section in the right column of the Bulk section.
+				$bulk_edit_coauthors_el.appendTo( $bulk_right_column );
+				// Quick fix to give the last column its 'real' height because
+				// the float:left; for the Post Format dropdown does not help positioning the Authors section we just added
+				$bulk_right_column.find( 'div.inline-edit-col' ).addClass( 'wp-clearfix' );
+				
+				var post_coauthors = [];
+
+				coauthors_initialize( post_coauthors );
+				coauthors_initialized_on_bulk_edit = true;
 			}
 		}
 	}
